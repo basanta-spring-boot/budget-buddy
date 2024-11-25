@@ -5,6 +5,6 @@ WORKDIR /app
 # Copy the compiled Java application JAR file into the container
 COPY ./target/budget-buddy.jar /app
 # Expose the port the Spring Boot application will run on
-EXPOSE 9191
+EXPOSE 8080
 # Command to run the application
 CMD ["java", "-jar", "budget-buddy.jar"]
