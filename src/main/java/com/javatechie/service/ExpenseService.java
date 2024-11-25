@@ -1,31 +1,45 @@
 package com.javatechie.service;
 
 import com.javatechie.entity.Expense;
-import com.javatechie.respository.ExpenseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class ExpenseService {
 
-    @Autowired
-    private ExpenseRepository expenseRepository;
+    // In-memory storage for Expense objects
+    private final List<Expense> expenses = new ArrayList<>();
 
+    // Get all expenses
     public List<Expense> getAllExpenses() {
-        return expenseRepository.findAll();
+        return new ArrayList<>(expenses); // Return a copy to avoid modification of internal list
     }
 
+    // Save an expense
     public Expense saveExpense(Expense expense) {
-        return expenseRepository.save(expense);
+        if (expense.getId() == null) {
+            expense.setId(new Random().nextLong());
+        }
+        // Check if the expense already exists and update it, otherwise add it
+        expenses.removeIf(e -> e.getId().equals(expense.getId()));
+        expenses.add(expense);
+        return expense;
     }
 
+    // Delete an expense by ID
     public void deleteExpense(Long id) {
-        expenseRepository.deleteById(id);
+        expenses.removeIf(expense -> expense.getId().equals(id));
     }
 
+    // Get an expense by ID
     public Expense getExpenseById(Long id) {
-        return expenseRepository.findById(id).orElse(null);
+        Optional<Expense> expense = expenses.stream()
+                .filter(e -> e.getId().equals(id))
+                .findFirst();
+        return expense.orElse(null);
     }
 }
